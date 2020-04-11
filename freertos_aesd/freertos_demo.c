@@ -153,19 +153,96 @@ ConfigureUART(void)
 }
 
 /*
- * handles
+ * Function : Configure_TX
+ * Parameters : void
+ * Return Type: void
+ * @Brief : using UART Module 2 to Transmit the received
  */
-//TaskHandle_t xTimer1;
+void Configure_TX(void)
+{
 
-//SemaphoreHandle_t xTask1;
+    //xSemaphoreTake(g_pUARTSemaphore,portMAX_DELAY);
+    UARTprintf("\n\rConfiguring Transmission");
+    //xSemaphoreGive(g_pUARTSemaphore);
+    // Enable UART peripheral used by UART Module 2 on PORT D
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    //
+    // Enable UART2
+    //
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART2);
+
+    //
+    // Configure GPIO Pins for UART mode.
+    //
+    ROM_GPIOPinConfigure(GPIO_PD6_U2RX);
+    ROM_GPIOPinConfigure(GPIO_PD7_U2TX);
+    ROM_GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_6 | GPIO_PIN_7);
+
+    //
+    // Use the internal 16MHz oscillator as the UART clock source.
+    //
+    UARTClockSourceSet(UART2_BASE, UART_CLOCK_PIOSC);
+
+    //
+    // Initialize the UART for console I/O.
+    //
+    //UARTStdioConfig(2, 115200, 16000000);
+    UARTConfigSetExpClk(UART2_BASE, SysCtlClockGet(), 115200,
+                           (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+                            UART_CONFIG_PAR_NONE));
+ }
+
+/*
+ * Function : Configure_RX
+ * Parameters : void
+ * Return Type : void
+ * @Brief : Receives the message on UART Module3 on Port C
+ */
+void Configure_RX(void)
+{
+
+    UARTprintf("\n\rConfiguring Receive");
+
+    // Enable UART peripheral used by UART Module 3 on PORT C
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    //
+    // Enable UART3
+    //
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART3);
+
+    //
+    // Configure GPIO Pins for UART mode.
+    //
+    ROM_GPIOPinConfigure(GPIO_PC6_U3RX);
+    ROM_GPIOPinConfigure(GPIO_PC7_U3TX);
+    ROM_GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_6 | GPIO_PIN_7);
+
+    //
+    // Use the internal 16MHz oscillator as the UART clock source.
+    //
+    UARTClockSourceSet(UART3_BASE, UART_CLOCK_PIOSC);
+    UARTConfigSetExpClk(UART3_BASE, SysCtlClockGet(), 115200,
+                           (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+                            UART_CONFIG_PAR_NONE));
+    //
+    // Initialize the UART for console I/O.
+    //
+   // UARTStdioConfig(3, 115200, 16000000);
+
+}
 
 
+/*
+ * Task Handles
+ */
+SemaphoreHandle_t transmit;
+SemaphoreHandle_t receive;
 
-
-
-
-
-
+/*
+ * Task Handlers
+ */
+void Transmit(void *pvParameters);
+void Receive(void *pvParameters);
 
 
 //*****************************************************************************
@@ -186,6 +263,8 @@ main(void)
     // Initialize the UART and configure it for 115,200, 8-N-1 operation.
     //
     ConfigureUART();
+    Configure_TX(); //configure UART Module 2 as Transmitter
+    Configure_RX(); // configure UART Module 3 as Receiver
 
     //
     // Print demo introduction.
@@ -197,27 +276,52 @@ main(void)
     //
     g_pUARTSemaphore = xSemaphoreCreateMutex();
 
+
+    transmit = xSemaphoreCreateBinary();
+    if( transmit == NULL )
+    {
+        UARTprintf("\n\rBinary Task Transmit not created.");
+    }
+
+    receive = xSemaphoreCreateBinary();
+    if( receive == NULL )
+    {
+        UARTprintf("\n\rBinary Task Receive not created.");
+    }
+
+
+    xTaskCreate( Transmit, "Transmit", 1000, NULL, 2, NULL);
+    xTaskCreate( Receive, "Receive", 1000, NULL, 2, NULL);
+
+    xSemaphoreGive(receive);
+
+
+
+
+
+
+
     //
     // Create the LED task.
     //
-    if(LEDTaskInit() != 0)
-    {
-
-        while(1)
-        {
-        }
-    }
+//    if(LEDTaskInit() != 0)
+//    {
+//
+//        while(1)
+//        {
+//        }
+//    }
 
     //
     // Create the switch task.
     //
-    if(SwitchTaskInit() != 0)
-    {
-
-        while(1)
-        {
-        }
-    }
+//    if(SwitchTaskInit() != 0)
+//    {
+//
+//        while(1)
+//        {
+//        }
+//    }
 
     //
     // Start the scheduler.  This should not return.
@@ -231,5 +335,40 @@ main(void)
 
     while(1)
     {
+    }
+}
+
+
+void Transmit(void *pvParameters)
+{
+    UARTprintf("\n\rTransmitting");
+    while(1)
+    {
+        xSemaphoreTake(receive,portMAX_DELAY);
+        uint8_t sensor_values[5] = {1,2,3,4,5}; //proxy sensor values to display
+        uint8_t i = 0;
+        while(i < 5)
+        {
+            UARTCharPutNonBlocking(UART2_BASE,sensor_values[i]);
+            i++;
+        }
+        xSemaphoreGive(transmit);
+    }
+
+}
+
+
+void Receive(void *pvParameters)
+{
+    UARTprintf("\n\rReceiving");
+    while(1)
+    {
+        xSemaphoreTake(transmit,portMAX_DELAY);
+        while(UARTCharsAvail(UART3_BASE))
+        {
+        uint8_t recv_val = UARTCharGetNonBlocking(UART3_BASE);
+        UARTprintf("\n\rReceived Value : %d",recv_val);
+        }
+        xSemaphoreGive(receive);
     }
 }
