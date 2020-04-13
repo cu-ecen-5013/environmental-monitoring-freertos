@@ -10,6 +10,9 @@ main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/sys/_ty
 main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/machine/_types.h
 main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/machine/_stdint.h
 main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/sys/_stdint.h
+main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/string.h
+main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/_ti_config.h
+main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/linkage.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
@@ -23,8 +26,6 @@ main.obj: ../led_task.h
 main.obj: ../switch_task.h
 main.obj: ../FreeRTOS.h
 main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stddef.h
-main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/_ti_config.h
-main.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/linkage.h
 main.obj: ../FreeRTOSConfig.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/projdefs.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/portable.h
@@ -37,6 +38,7 @@ main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/semphr.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/timers.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
+main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
 
 ../main.c: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdbool.h: 
@@ -48,6 +50,9 @@ C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/sys/_types.h:
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/machine/_types.h: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/machine/_stdint.h: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/sys/_stdint.h: 
+C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/string.h: 
+C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/_ti_config.h: 
+C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/linkage.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h: 
@@ -61,8 +66,6 @@ C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdarg.h:
 ../switch_task.h: 
 ../FreeRTOS.h: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stddef.h: 
-C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/_ti_config.h: 
-C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/linkage.h: 
 ../FreeRTOSConfig.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/projdefs.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/portable.h: 
@@ -75,3 +78,4 @@ C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/queue.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/semphr.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/timers.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 

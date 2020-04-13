@@ -2,9 +2,11 @@
 Author : Madhukar Arora
 File name : main.c
 @Brief : Tests UART LOOPBACK on TIVA BOARD
+Reference : https://www.cse.iitb.ac.in/~erts/html_pages/Resources/Tiva/TM4C123G_LaunchPad_Workshop_Workbook.pdf
  */
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/gpio.h"
@@ -21,7 +23,7 @@ File name : main.c
 #include "semphr.h"
 #include "timers.h"
 #include "inc/hw_ints.h"
-
+#include "driverlib/interrupt.h"
 
 
 
@@ -31,6 +33,7 @@ File name : main.c
 //
 //*****************************************************************************
 xSemaphoreHandle g_pUARTSemaphore;
+uint8_t string_complete = 0;
 
 //*****************************************************************************
 //
@@ -167,6 +170,31 @@ void Configure_RX(void)
 
 }
 
+
+
+/********************************************************************************************************
+ * INTERRUPT FLAGS AND HANDLERS
+ */
+
+
+void UART_Transmit_ISR(void);
+void UART_Receive_ISR(void);
+
+void send_string(void)
+{
+    char test_string[] = "Hello, World!";
+
+    char *string_test = test_string;
+
+    while(*string_test != '\0')
+    {
+        UARTCharPut(UART1_BASE,*string_test);
+        string_test++;
+        SysCtlDelay(SysCtlClockGet()/(1000 * 3));
+    }
+    string_complete = 1;
+}
+
 //*****************************************************************************
 //
 // Initialize FreeRTOS and start the initial set of tasks.
@@ -203,89 +231,84 @@ main(void)
     UARTIntEnable(UART3_BASE, UART_INT_RX);
 
 
-
-
-
-    /********************************************************************************************************
-     * INTERRUPT FLAGS
-     */
-
-    uint32_t ui32transmit_status, ui32receive_status;
-
-
-
     //UARTprintf("\n\r Board Transmitting");
     UARTprintf("\n\r Board Receiving");
+    while(true)
+    {
+        send_string();
+    }
 
 
     //CHAR TRANSFER TESTING
     //    UARTCharPutNonBlocking(UART1_BASE,'A');
-    if(UARTCharsAvail(UART3_BASE))
-    {
-        char single_char = ROM_UARTCharGet(UART3_BASE);
-        UARTprintf("\n\r Single Character Testing : %c ",single_char);
-    }
+//    if(UARTCharsAvail(UART3_BASE))
+//    {
+//        char single_char = ROM_UARTCharGet(UART3_BASE);
+//        UARTprintf("\n\r Single Character Testing : %c ",single_char);
+//    }
 
 
 
     //STRING TRANSFER TESTING
-        char test_string[]="Hello World!";
-        char *ptr=test_string;
-        while(*ptr != '\n')
-        {
-            UARTCharPutNonBlocking(UART1_BASE,*ptr);
-            ptr++;
-        }
-
-        while(UARTCharsAvail(UART3_BASE)){
-
-            char string_char = ROM_UARTCharGet(UART3_BASE);
-            UARTprintf("Received character: %c \r\n", string_char);
-
-        }
+//        char test_string[]="Hello World!";
+//        char *ptr=test_string;
+//        while(*ptr != '\n')
+//        {
+//            UARTCharPutNonBlocking(UART1_BASE,*ptr);
+//            ptr++;
+//        }
+//
+//        while(UARTCharsAvail(UART3_BASE)){
+//
+//            char string_char = ROM_UARTCharGet(UART3_BASE);
+//            UARTprintf("Received character: %c \r\n", string_char);
+//
+//        }
 
     //
     // Start the scheduler.  This should not return.
     //
-    vTaskStartScheduler();
 
-    g_pUARTSemaphore = xSemaphoreCreateMutex();
+    //g_pUARTSemaphore = xSemaphoreCreateMutex();
+
+    //vTaskStartScheduler();
+
+
     //
     // In case the scheduler returns for some reason, print an error and loop
     // forever.
     //
+    //UARTCharPut(UART1_BASE,'A');
 
     while(1)
     {
 
+
     }
 }
-//
-//void Transmit_ISR(void)
-//{
-//    uint32_t ui32TransmitCheck;
-//    ui32TransmitCheck = UARTIntStatus(UART2_BASE,true);
-//    UARTIntClear(UART2_BASE,ui32TransmitCheck);
-//    UARTprintf("\n\rTransmit done");
-//}
-//
-//
-//
-//void Receive_ISR(void)
-//{
-//    uint32_t ui32ReceiveCheck;
-//    //check interrupt status
-//    ui32ReceiveCheck  = UARTIntStatus(UART3_BASE,true);
-//    UARTIntClear(UART3_BASE,ui32ReceiveCheck);
-//    while(UARTCharsAvail(UART3_BASE))
-//    {
-//        unsigned char received = ROM_UARTCharGet(UART3_BASE);
-//        UARTprintf("\n\r received = %c",received);
-//    }
-//
-//}
 
+/*
+ *
+ */
+void UART_Transmit_ISR(void)
+{
+    uint32_t ui32transmit_status;
+    ui32transmit_status = UARTIntStatus(UART1_BASE,true);
+    UARTIntClear(UART1_BASE,ui32transmit_status);
+}
 
+void UART_Receive_ISR(void)
+{
+    uint32_t ui32receive_status;
+    ui32receive_status = UARTIntStatus(UART3_BASE,true);
+    UARTIntClear(UART3_BASE,ui32receive_status);
+    while(UARTCharsAvail(UART3_BASE))
+    {
+        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
+        UARTprintf("\n\r element received : %c",received_data);
+        //SysCtlDelay(SysCtlClockGet()/(1000 * 3));
+    }
+}
 
 
 
