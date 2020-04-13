@@ -36,6 +36,7 @@ freertos_demo.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source
 freertos_demo.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/queue.h
 freertos_demo.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/semphr.h
 freertos_demo.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/timers.h
+freertos_demo.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 
 ../freertos_demo.c: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdbool.h: 
@@ -73,3 +74,4 @@ C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/list.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/queue.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/semphr.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/timers.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
