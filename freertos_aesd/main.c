@@ -102,7 +102,7 @@ ConfigureUART(void)
     //
     // Initialize the UART for console I/O.
     //
-    UARTStdioConfig(0, 115200, 16000000);
+    UARTStdioConfig(0, 4800, 16000000);
 
 
 }
@@ -135,7 +135,7 @@ void Configure_TX(void)
     //
     // Initialize the UART for console I/O.
     //
-    ROM_UARTConfigSetExpClk(UART1_BASE, 16000000, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    ROM_UARTConfigSetExpClk(UART1_BASE, 16000000, 4800, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 
 }
 
@@ -166,7 +166,7 @@ void Configure_RX(void)
     //
     // Initialize the UART for console I/O.
     //
-    ROM_UARTConfigSetExpClk(UART3_BASE,16000000, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    ROM_UARTConfigSetExpClk(UART3_BASE,16000000, 4800, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 
 }
 
@@ -177,12 +177,12 @@ void Configure_RX(void)
  */
 
 
-void UART_Transmit_ISR(void);
-void UART_Receive_ISR(void);
+//void UART_Transmit_ISR(void);
+//void UART_Receive_ISR(void);
 
 void send_string(void)
 {
-    char test_string[] = "Hello, World!";
+    char test_string[] = "HelloHel";
 
     char *string_test = test_string;
 
@@ -190,7 +190,7 @@ void send_string(void)
     {
         UARTCharPut(UART1_BASE,*string_test);
         string_test++;
-        SysCtlDelay(SysCtlClockGet()/(1000 * 3));
+        SysCtlDelay(SysCtlClockGet()/(100 * 3));
     }
     string_complete = 1;
 }
@@ -220,50 +220,38 @@ main(void)
     //adding to try interrupt based UART
 
     //enables processor interrupts
-    IntMasterEnable();
+    //IntMasterEnable();
 
     //enable interrupt for UART
-    IntEnable(INT_UART1);
-    IntEnable(INT_UART3);
+    //IntEnable(INT_UART1);
+    //IntEnable(INT_UART3);
 
     //enable receive interrupt on module 3 and transmit interrupt on module 1
-    UARTIntEnable(UART1_BASE, UART_INT_TX);
-    UARTIntEnable(UART3_BASE, UART_INT_RX);
+    //UARTIntEnable(UART1_BASE, UART_INT_TX);
+    //UARTIntEnable(UART3_BASE, UART_INT_RX);
 
 
-    //UARTprintf("\n\r Board Transmitting");
-    UARTprintf("\n\r Board Receiving");
+    UARTprintf("\n\r Board Transmitting\n\r");
+    //UARTprintf("\n\r Board Receiving");
     while(true)
     {
-        send_string();
-    }
-
-
-    //CHAR TRANSFER TESTING
-    //    UARTCharPutNonBlocking(UART1_BASE,'A');
-//    if(UARTCharsAvail(UART3_BASE))
-//    {
-//        char single_char = ROM_UARTCharGet(UART3_BASE);
-//        UARTprintf("\n\r Single Character Testing : %c ",single_char);
+////        send_string();
+//        UARTCharPut(UART1_BASE,'P');
 //    }
 
+        if(UARTCharsAvail(UART3_BASE))
+        {
+            char single_char = ROM_UARTCharGet(UART3_BASE);
+            UARTprintf("%c",single_char);
+        }
 
+        SysCtlDelay(SysCtlClockGet()/(130 * 3));
 
     //STRING TRANSFER TESTING
-//        char test_string[]="Hello World!";
-//        char *ptr=test_string;
-//        while(*ptr != '\n')
-//        {
-//            UARTCharPutNonBlocking(UART1_BASE,*ptr);
-//            ptr++;
-//        }
-//
-//        while(UARTCharsAvail(UART3_BASE)){
-//
-//            char string_char = ROM_UARTCharGet(UART3_BASE);
-//            UARTprintf("Received character: %c \r\n", string_char);
-//
-//        }
+        send_string();
+
+
+    }
 
     //
     // Start the scheduler.  This should not return.
@@ -277,38 +265,33 @@ main(void)
     //
     // In case the scheduler returns for some reason, print an error and loop
     // forever.
-    //
-    //UARTCharPut(UART1_BASE,'A');
-
-    while(1)
-    {
 
 
-    }
+
 }
 
 /*
  *
  */
-void UART_Transmit_ISR(void)
-{
-    uint32_t ui32transmit_status;
-    ui32transmit_status = UARTIntStatus(UART1_BASE,true);
-    UARTIntClear(UART1_BASE,ui32transmit_status);
-}
-
-void UART_Receive_ISR(void)
-{
-    uint32_t ui32receive_status;
-    ui32receive_status = UARTIntStatus(UART3_BASE,true);
-    UARTIntClear(UART3_BASE,ui32receive_status);
-    while(UARTCharsAvail(UART3_BASE))
-    {
-        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
-        UARTprintf("\n\r element received : %c",received_data);
-        //SysCtlDelay(SysCtlClockGet()/(1000 * 3));
-    }
-}
-
+//void UART_Transmit_ISR(void)
+//{
+//    uint32_t ui32transmit_status;
+//    ui32transmit_status = UARTIntStatus(UART1_BASE,true);
+//    UARTIntClear(UART1_BASE,ui32transmit_status);
+//}
+//
+//void UART_Receive_ISR(void)
+//{
+//    uint32_t ui32receive_status;
+//    ui32receive_status = UARTIntStatus(UART3_BASE,true);
+//    UARTIntClear(UART3_BASE,ui32receive_status);
+//    while(UARTCharsAvail(UART3_BASE))
+//    {
+//        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
+//        UARTprintf("\n\r element received : %c",received_data);
+//        //SysCtlDelay(SysCtlClockGet()/(1000 * 3));
+//    }
+//}
+//
 
 
