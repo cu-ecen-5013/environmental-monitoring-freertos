@@ -12,36 +12,42 @@ C_SRCS += \
 ../led_task.c \
 ../main.c \
 ../startup_ccs.c \
-../switch_task.c 
+../switch_task.c \
+../uart.c 
 
 C_DEPS += \
 ./led_task.d \
 ./main.d \
 ./startup_ccs.d \
-./switch_task.d 
+./switch_task.d \
+./uart.d 
 
 OBJS += \
 ./led_task.obj \
 ./main.obj \
 ./startup_ccs.obj \
-./switch_task.obj 
+./switch_task.obj \
+./uart.obj 
 
 OBJS__QUOTED += \
 "led_task.obj" \
 "main.obj" \
 "startup_ccs.obj" \
-"switch_task.obj" 
+"switch_task.obj" \
+"uart.obj" 
 
 C_DEPS__QUOTED += \
 "led_task.d" \
 "main.d" \
 "startup_ccs.d" \
-"switch_task.d" 
+"switch_task.d" \
+"uart.d" 
 
 C_SRCS__QUOTED += \
 "../led_task.c" \
 "../main.c" \
 "../startup_ccs.c" \
-"../switch_task.c" 
+"../switch_task.c" \
+"../uart.c" 
 
 

@@ -3,29 +3,12 @@ Author : Madhukar Arora
 File name : main.c
 @Brief : Tests UART LOOPBACK on TIVA BOARD
 Reference : https://www.cse.iitb.ac.in/~erts/html_pages/Resources/Tiva/TM4C123G_LaunchPad_Workshop_Workbook.pdf
+https://www.freertos.org/a00018.html
+
+Edited by: Akshita Bhasin
+        -- To include changes for Message Queue Testing
  */
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/gpio.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/rom.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/uart.h"
-#include "utils/uartstdio.h"
-#include "led_task.h"
-#include "switch_task.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "semphr.h"
-#include "timers.h"
-#include "inc/hw_ints.h"
-#include "driverlib/interrupt.h"
-
-
+#include "uart.h"
 
 //*****************************************************************************
 //
@@ -33,7 +16,6 @@ Reference : https://www.cse.iitb.ac.in/~erts/html_pages/Resources/Tiva/TM4C123G_
 //
 //*****************************************************************************
 xSemaphoreHandle g_pUARTSemaphore;
-uint8_t string_complete = 0;
 
 //*****************************************************************************
 //
@@ -47,6 +29,7 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 
 #endif
+
 
 //*****************************************************************************
 //
@@ -68,131 +51,96 @@ vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
     }
 }
 
-//*****************************************************************************
-//
-// Configure the UART and its pins.  This must be called before UARTprintf().
-//
-//*****************************************************************************
-void
-ConfigureUART(void)
+SemaphoreHandle_t g_pSemaphore1, g_pSemaphore2, g_pSemaphore3;
+QueueHandle_t xMessage_queue;
+
+typedef struct Msg_que
 {
-    /***********************uart 0-FOR PRINTING ON CONSOLE************************************************/
-    //
-    // Enable the GPIO Peripheral used by the UART.
-    //
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    char MQ_NAME;
+    uint32_t MQ_DATA;
+}MessageQueueStruct;
 
-    //
-    // Enable UART0
-    //
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-
-    //
-    // Configure GPIO Pins for UART mode.
-    //
-    ROM_GPIOPinConfigure(GPIO_PA0_U0RX);
-    ROM_GPIOPinConfigure(GPIO_PA1_U0TX);
-    ROM_GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-
-    //
-    // Use the internal 16MHz oscillator as the UART clock source.
-    //
-    UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC);
-
-    //
-    // Initialize the UART for console I/O.
-    //
-    UARTStdioConfig(0, 4800, 16000000);
-
-
-}
-
-
-/*
- * Function : Configure_TX
- * Parameters : void
- * Return Type: void
- * @Brief : using UART Module 1 to Transmit the received
- */
-
-void Configure_TX(void)
+void vTwoMultiplesTask1(void * pvParameters)
 {
-    // Enable UART peripheral used by UART Module 1 on PORT B for transmission
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-
-    // Enable UART
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
-
-    //Configure GPIO Pins for UART mode
-    ROM_GPIOPinConfigure(GPIO_PB0_U1RX);
-    ROM_GPIOPinConfigure(GPIO_PB1_U1TX);
-    ROM_GPIOPinTypeUART(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-
-    //
-    // Use the internal 16MHz oscillator as the UART clock source.
-    //
-    UARTClockSourceSet(UART1_BASE, UART_CLOCK_PIOSC);
-    //
-    // Initialize the UART for console I/O.
-    //
-    ROM_UARTConfigSetExpClk(UART1_BASE, 16000000, 4800, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-
-}
-
-
-/*
- * Function : Configure_RX
- * Parameters : void
- * Return Type : void
- * @Brief : Receives the message on UART Module3 on Port C
- */
-void Configure_RX(void)
-{
-    // Enable UART peripheral used by UART Module 3 on PORT C for receiving
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
-
-    //Enable UART
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART3);
-
-    //Configure GPIO Pins for UART mode
-    ROM_GPIOPinConfigure(GPIO_PC6_U3RX);
-    ROM_GPIOPinConfigure(GPIO_PC7_U3TX);
-    ROM_GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_6 | GPIO_PIN_7);
-
-    //
-    // Use the internal 16MHz oscillator as the UART clock source.
-    //
-    UARTClockSourceSet(UART3_BASE, UART_CLOCK_PIOSC);
-    //
-    // Initialize the UART for console I/O.
-    //
-    ROM_UARTConfigSetExpClk(UART3_BASE,16000000, 4800, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-
-}
-
-
-
-/********************************************************************************************************
- * INTERRUPT FLAGS AND HANDLERS
- */
-
-
-//void UART_Transmit_ISR(void);
-//void UART_Receive_ISR(void);
-
-void send_string(void)
-{
-    char test_string[] = "HelloHel";
-
-    char *string_test = test_string;
-
-    while(*string_test != '\0')
+    MessageQueueStruct mult_two;
+    mult_two.MQ_DATA = 0;
+    uint16_t i = 1;
+    while(i<256)
     {
-        UARTCharPut(UART1_BASE,*string_test);
-        string_test++;
-        SysCtlDelay(SysCtlClockGet()/(100 * 3));
+        if(xSemaphoreTake(g_pSemaphore2, ( TickType_t ) 0) == pdTRUE )
+        {
+            mult_two.MQ_NAME = 2;
+            mult_two.MQ_DATA += 2;
+
+            if(xQueueSend(xMessage_queue, (void *)&mult_two,(TickType_t)20) == pdPASS)
+            {
+                xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+                UARTprintf("Multiple of 2 at %d = %d\n",i++, mult_two.MQ_DATA);
+                xSemaphoreGive(g_pUARTSemaphore);
+            }
+
+            xSemaphoreGive(g_pSemaphore3);
+            SysCtlDelay(SysCtlClockGet()/(20 * 3));
+        }
     }
-    string_complete = 1;
+}
+
+
+void vSevenMultiplesTask2( void * pvParameters )
+{
+    MessageQueueStruct mult_seven;
+
+    mult_seven.MQ_DATA= 0;
+    uint16_t i=1;
+    while(i<256)
+    {
+
+        if( xSemaphoreTake(g_pSemaphore1, ( TickType_t ) 0) == pdTRUE )
+        {
+
+            mult_seven.MQ_NAME = 7;
+            mult_seven.MQ_DATA += 7;
+
+            if(xQueueSend(xMessage_queue, (void *)&mult_seven, (TickType_t)20) == pdPASS)
+            {
+
+                xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+                UARTprintf("Multiple of 7 at %d = %d\n",i++, mult_seven.MQ_DATA);
+                xSemaphoreGive(g_pUARTSemaphore);
+            }
+
+
+            xSemaphoreGive(g_pSemaphore2);
+            SysCtlDelay(SysCtlClockGet()/(20 * 3));
+        }
+    }
+}
+
+
+void vMessageQueueTask3(void * pvParameters)
+{
+    MessageQueueStruct data;
+
+    while(1)
+    {
+        if(xSemaphoreTake(g_pSemaphore3, (TickType_t)0) == pdTRUE )
+        {
+            if(xQueueReceive(xMessage_queue, &(data), (TickType_t)20))
+            {
+                xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+                xSemaphoreGive(g_pUARTSemaphore);
+            }
+            if(xQueueReceive(xMessage_queue, &(data), (TickType_t)20))
+            {
+                xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+                xSemaphoreGive(g_pUARTSemaphore);
+            }
+
+            xSemaphoreGive(g_pSemaphore1);
+
+        }
+    }
+
 }
 
 //*****************************************************************************
@@ -216,82 +164,61 @@ main(void)
     Configure_TX(); //module 1 to transmit | PB1
     Configure_RX(); //module 3 to receive  | PC6
 
+    g_pUARTSemaphore = xSemaphoreCreateMutex();
+
+    g_pSemaphore1 = xSemaphoreCreateBinary();
+    g_pSemaphore2 = xSemaphoreCreateBinary();
+    g_pSemaphore3 = xSemaphoreCreateBinary();
+
+    if((g_pSemaphore3 == NULL) || (g_pSemaphore2 == NULL) || (g_pSemaphore1 == NULL))
+    {
+        UARTprintf("\n\rSemaphore not created.");
+    }
 
     //adding to try interrupt based UART
 
     //enables processor interrupts
-    //IntMasterEnable();
+    IntMasterEnable();
 
-    //enable interrupt for UART
-    //IntEnable(INT_UART1);
-    //IntEnable(INT_UART3);
+//    enable interrupt for UART
+    IntEnable(INT_UART1);
+    IntEnable(INT_UART3);
 
-    //enable receive interrupt on module 3 and transmit interrupt on module 1
-    //UARTIntEnable(UART1_BASE, UART_INT_TX);
-    //UARTIntEnable(UART3_BASE, UART_INT_RX);
+//    enable receive interrupt on module 3 and transmit interrupt on module 1
+    UARTIntEnable(UART1_BASE, UART_INT_TX);
+    UARTIntEnable(UART3_BASE, UART_INT_RX);
 
+    xMessage_queue = xQueueCreate(100, sizeof(MessageQueueStruct) );
+
+    if(xMessage_queue == NULL )
+    {
+        UARTprintf("Queue not created\n");
+    }
+
+    xTaskCreate(vMessageQueueTask3, (const char *)"Message Queue Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(vSevenMultiplesTask2, (const char *)"Multiple of seven Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(vTwoMultiplesTask1, (const char *)"Multiple of Two Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+
+    xSemaphoreGive(g_pSemaphore1);
+
+    //
+    // Start the scheduler.  This should not return.
+    //
+    vTaskStartScheduler();
 
     UARTprintf("\n\r Board Transmitting\n\r");
     //UARTprintf("\n\r Board Receiving");
     while(true)
     {
-////        send_string();
-//        UARTCharPut(UART1_BASE,'P');
-//    }
 
-        if(UARTCharsAvail(UART3_BASE))
-        {
-            char single_char = ROM_UARTCharGet(UART3_BASE);
-            UARTprintf("%c",single_char);
-        }
+//        if(UARTCharsAvail(UART3_BASE))
+//        {
+//            char single_char = ROM_UARTCharGet(UART3_BASE);
+//            UARTprintf("%c",single_char);
+//        }
 
-        SysCtlDelay(SysCtlClockGet()/(130 * 3));
-
-    //STRING TRANSFER TESTING
         send_string();
-
-
     }
-
-    //
-    // Start the scheduler.  This should not return.
-    //
-
-    //g_pUARTSemaphore = xSemaphoreCreateMutex();
-
-    //vTaskStartScheduler();
-
-
-    //
-    // In case the scheduler returns for some reason, print an error and loop
-    // forever.
-
-
-
 }
-
-/*
- *
- */
-//void UART_Transmit_ISR(void)
-//{
-//    uint32_t ui32transmit_status;
-//    ui32transmit_status = UARTIntStatus(UART1_BASE,true);
-//    UARTIntClear(UART1_BASE,ui32transmit_status);
-//}
-//
-//void UART_Receive_ISR(void)
-//{
-//    uint32_t ui32receive_status;
-//    ui32receive_status = UARTIntStatus(UART3_BASE,true);
-//    UARTIntClear(UART3_BASE,ui32receive_status);
-//    while(UARTCharsAvail(UART3_BASE))
-//    {
-//        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
-//        UARTprintf("\n\r element received : %c",received_data);
-//        //SysCtlDelay(SysCtlClockGet()/(1000 * 3));
-//    }
-//}
-//
 
 
