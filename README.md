@@ -1,5 +1,3 @@
-# s20-environmental-monitoring-tiva
-
 # Environment Monitoring system
 
 This repository contains the application implementation on the BBB.
