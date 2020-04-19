@@ -1,7 +1,7 @@
 # FIXED
 
 main.obj: ../main.c
-main.obj: ../uart.h
+main.obj: ../include_files/uart.h
 main.obj: C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stdbool.h
 main.obj: C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stdint.h
 main.obj: C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/_stdint40.h
@@ -23,11 +23,11 @@ main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/uart.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 main.obj: C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stdarg.h
-main.obj: ../led_task.h
-main.obj: ../switch_task.h
-main.obj: ../FreeRTOS.h
+main.obj: C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/led_task.h
+main.obj: C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/switch_task.h
+main.obj: C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/FreeRTOS.h
 main.obj: C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stddef.h
-main.obj: ../FreeRTOSConfig.h
+main.obj: C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/FreeRTOSConfig.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/projdefs.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/portable.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/deprecated_definitions.h
@@ -42,7 +42,7 @@ main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
 
 ../main.c: 
-../uart.h: 
+../include_files/uart.h: 
 C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stdbool.h: 
 C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stdint.h: 
 C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/_stdint40.h: 
@@ -64,11 +64,11 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/uart.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stdarg.h: 
-../led_task.h: 
-../switch_task.h: 
-../FreeRTOS.h: 
+C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/led_task.h: 
+C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/switch_task.h: 
+C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/FreeRTOS.h: 
 C:/ti/ccs1000/ccs/tools/compiler/ti-cgt-arm_20.2.0.LTS/include/stddef.h: 
-../FreeRTOSConfig.h: 
+C:/Users/Akshita\ Bhasin/workspace_v10/freertos_demo/FreeRTOSConfig.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/projdefs.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/portable.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/deprecated_definitions.h: 

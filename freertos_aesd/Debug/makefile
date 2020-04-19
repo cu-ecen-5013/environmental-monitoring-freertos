@@ -12,11 +12,13 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./led_task.obj" \
 "./main.obj" \
+"./sem.obj" \
 "./startup_ccs.obj" \
 "./switch_task.obj" \
-"./uart.obj" \
 "./drivers/buttons.obj" \
 "./drivers/rgb.obj" \
+"./source_files/processing_bbb.obj" \
+"./source_files/uart.obj" \
 "./third_party/FreeRTOS/Source/list.obj" \
 "./third_party/FreeRTOS/Source/queue.obj" \
 "./third_party/FreeRTOS/Source/tasks.obj" \
@@ -40,12 +42,14 @@ RMDIR := RMDIR /S/Q
 -include sources.mk
 -include subdir_vars.mk
 -include drivers/subdir_vars.mk
+-include source_files/subdir_vars.mk
 -include third_party/FreeRTOS/Source/subdir_vars.mk
 -include third_party/FreeRTOS/Source/portable/CCS/ARM_CM4F/subdir_vars.mk
 -include third_party/FreeRTOS/Source/portable/MemMang/subdir_vars.mk
 -include utils/subdir_vars.mk
 -include subdir_rules.mk
 -include drivers/subdir_rules.mk
+-include source_files/subdir_rules.mk
 -include third_party/FreeRTOS/Source/subdir_rules.mk
 -include third_party/FreeRTOS/Source/portable/CCS/ARM_CM4F/subdir_rules.mk
 -include third_party/FreeRTOS/Source/portable/MemMang/subdir_rules.mk
@@ -181,8 +185,8 @@ freertos_demo.bin: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "led_task.obj" "main.obj" "startup_ccs.obj" "switch_task.obj" "uart.obj" "drivers\buttons.obj" "drivers\rgb.obj" "third_party\FreeRTOS\Source\list.obj" "third_party\FreeRTOS\Source\queue.obj" "third_party\FreeRTOS\Source\tasks.obj" "third_party\FreeRTOS\Source\timers.obj" "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\port.obj" "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\portasm.obj" "third_party\FreeRTOS\Source\portable\MemMang\heap_2.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" 
-	-$(RM) "led_task.d" "main.d" "startup_ccs.d" "switch_task.d" "uart.d" "drivers\buttons.d" "drivers\rgb.d" "third_party\FreeRTOS\Source\list.d" "third_party\FreeRTOS\Source\queue.d" "third_party\FreeRTOS\Source\tasks.d" "third_party\FreeRTOS\Source\timers.d" "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\port.d" "third_party\FreeRTOS\Source\portable\MemMang\heap_2.d" "utils\uartstdio.d" "utils\ustdlib.d" 
+	-$(RM) "led_task.obj" "main.obj" "sem.obj" "startup_ccs.obj" "switch_task.obj" "drivers\buttons.obj" "drivers\rgb.obj" "source_files\processing_bbb.obj" "source_files\uart.obj" "third_party\FreeRTOS\Source\list.obj" "third_party\FreeRTOS\Source\queue.obj" "third_party\FreeRTOS\Source\tasks.obj" "third_party\FreeRTOS\Source\timers.obj" "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\port.obj" "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\portasm.obj" "third_party\FreeRTOS\Source\portable\MemMang\heap_2.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" 
+	-$(RM) "led_task.d" "main.d" "sem.d" "startup_ccs.d" "switch_task.d" "drivers\buttons.d" "drivers\rgb.d" "source_files\processing_bbb.d" "source_files\uart.d" "third_party\FreeRTOS\Source\list.d" "third_party\FreeRTOS\Source\queue.d" "third_party\FreeRTOS\Source\tasks.d" "third_party\FreeRTOS\Source\timers.d" "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\port.d" "third_party\FreeRTOS\Source\portable\MemMang\heap_2.d" "utils\uartstdio.d" "utils\ustdlib.d" 
 	-$(RM) "third_party\FreeRTOS\Source\portable\CCS\ARM_CM4F\portasm.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

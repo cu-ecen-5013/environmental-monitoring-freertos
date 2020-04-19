@@ -81,7 +81,7 @@
 #define configUSE_MUTEXES                   1
 #define configUSE_RECURSIVE_MUTEXES         1
 #define configCHECK_FOR_STACK_OVERFLOW      2
-#define configUSE_TIMERS                    0
+#define configUSE_TIMERS                    1
 #define configTIMER_TASK_PRIORITY           3
 #define configTIMER_QUEUE_LENGTH            10
 #define configTIMER_TASK_STACK_DEPTH        configMINIMAL_STACK_SIZE

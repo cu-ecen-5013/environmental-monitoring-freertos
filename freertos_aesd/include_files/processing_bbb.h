@@ -1,16 +1,18 @@
 /*
- * uart.h
+ * processing_bbbb.h
  *
- *  Created on: Apr 17, 2020
+ *  Created on: Apr 19, 2020
  *      Author: Akshita Bhasin
  */
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef INCLUDE_FILES_PROCESSING_BBBB_H_
+#define INCLUDE_FILES_PROCESSING_BBBB_H_
 
+/****************************************************************************
+ * INCLUDES                                                                 *
+ ****************************************************************************/
 #include <stdbool.h>
 #include <stdint.h>
-#include <string.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/gpio.h"
@@ -25,15 +27,11 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
-#include "timers.h"
+
+// Header files for interrupts
 #include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
 
-void ConfigureUART(void);
-void Configure_TX(void);
-void Configure_RX(void);
-void UART_Transmit_ISR(void);
-void UART_Receive_ISR(void);
-void send_string(void);
+void vProcessingTask(void *pvParameters);
 
-#endif /* UART_H_ */
+#endif /* INCLUDE_FILES_PROCESSING_BBBB_H_ */

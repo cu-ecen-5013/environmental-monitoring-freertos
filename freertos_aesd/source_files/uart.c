@@ -1,11 +1,11 @@
 /*
  * uart.c
  *
- *  Created on: Apr 17, 2020
+ *  Created on: Apr 19, 2020
  *      Author: Akshita Bhasin
  */
 
-#include "uart.h"
+#include "../include_files/uart.h"
 
 
 //*****************************************************************************
@@ -116,7 +116,7 @@ void Configure_RX(void)
 
 void send_string(void)
 {
-    char test_string[] = "Hello Beaglebone!";
+    char test_string[] = "Hello Beaglebone!!!";
 
     char *string_test = test_string;
 

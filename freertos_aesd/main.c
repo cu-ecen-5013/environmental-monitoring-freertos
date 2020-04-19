@@ -8,7 +8,7 @@ https://www.freertos.org/a00018.html
 Edited by: Akshita Bhasin
         -- To include changes for Message Queue Testing
  */
-#include "uart.h"
+#include "include_files/uart.h"
 
 //*****************************************************************************
 //
@@ -65,7 +65,7 @@ void vTwoMultiplesTask1(void * pvParameters)
     MessageQueueStruct mult_two;
     mult_two.MQ_DATA = 0;
     uint16_t i = 1;
-    while(i<256)
+    while(i<4)
     {
         if(xSemaphoreTake(g_pSemaphore2, ( TickType_t ) 0) == pdTRUE )
         {
@@ -92,7 +92,7 @@ void vSevenMultiplesTask2( void * pvParameters )
 
     mult_seven.MQ_DATA= 0;
     uint16_t i=1;
-    while(i<256)
+    while(i<3)
     {
 
         if( xSemaphoreTake(g_pSemaphore1, ( TickType_t ) 0) == pdTRUE )
@@ -166,6 +166,8 @@ main(void)
 
     g_pUARTSemaphore = xSemaphoreCreateMutex();
 
+    UARTprintf("Environmental monitoring system");
+
     g_pSemaphore1 = xSemaphoreCreateBinary();
     g_pSemaphore2 = xSemaphoreCreateBinary();
     g_pSemaphore3 = xSemaphoreCreateBinary();
@@ -201,23 +203,20 @@ main(void)
 
     xSemaphoreGive(g_pSemaphore1);
 
+    UARTprintf("\n\r Board Transmitting\n\r");
+    //UARTprintf("\n\r Board Receiving");
+
+//    while(true)
+//    {
+//        send_string();
+//    }
     //
     // Start the scheduler.  This should not return.
     //
     vTaskStartScheduler();
 
-    UARTprintf("\n\r Board Transmitting\n\r");
-    //UARTprintf("\n\r Board Receiving");
-    while(true)
-    {
+    while(1){
 
-//        if(UARTCharsAvail(UART3_BASE))
-//        {
-//            char single_char = ROM_UARTCharGet(UART3_BASE);
-//            UARTprintf("%c",single_char);
-//        }
-
-        send_string();
     }
 }
 
