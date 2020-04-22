@@ -29,6 +29,18 @@
 #include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
 
+struct receive_msg_queue
+{
+    uint8_t sensor_ID;
+    uint16_t sensor_value;
+};
+
+struct send_msg_queue
+{
+    uint8_t actuator_ID;
+    uint8_t actuator_value;
+};
+
 void ConfigureUART(void);
 void Configure_TX(void);
 void Configure_RX(void);

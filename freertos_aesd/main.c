@@ -53,6 +53,7 @@ vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
 
 SemaphoreHandle_t g_pSemaphore1, g_pSemaphore2, g_pSemaphore3;
 QueueHandle_t xMessage_queue;
+QueueHandle_t xReceiveMsgQueue;
 
 typedef struct Msg_que
 {
@@ -213,14 +214,16 @@ main(void)
 
     UARTprintf("Environmental monitoring system");
 
-    g_pSemaphore1 = xSemaphoreCreateBinary();
-    g_pSemaphore2 = xSemaphoreCreateBinary();
-    g_pSemaphore3 = xSemaphoreCreateBinary();
+    xReceiveMsgQueue = xQueueCreate(300, 4);
 
-    if((g_pSemaphore3 == NULL) || (g_pSemaphore2 == NULL) || (g_pSemaphore1 == NULL))
-    {
-        UARTprintf("\n\rSemaphore not created.");
-    }
+//    g_pSemaphore1 = xSemaphoreCreateBinary();
+//    g_pSemaphore2 = xSemaphoreCreateBinary();
+//    g_pSemaphore3 = xSemaphoreCreateBinary();
+//
+//    if((g_pSemaphore3 == NULL) || (g_pSemaphore2 == NULL) || (g_pSemaphore1 == NULL))
+//    {
+//        UARTprintf("\n\rSemaphore not created.");
+//    }
 
 //    g_pTask1 = xSemaphoreCreateBinary();
 //    g_pTask2 = xSemaphoreCreateBinary();
@@ -239,7 +242,7 @@ main(void)
 //        xSemaphoreGive(g_pUARTSemaphore);
 //    }
 
-    //adding to try interrupt based UART
+    UARTFIFOLevelSet(UART3_BASE,NULL,UART_FIFO_RX2_8);
 
     //enables processor interrupts
     IntMasterEnable();
@@ -252,18 +255,18 @@ main(void)
     UARTIntEnable(UART1_BASE, UART_INT_TX);
     UARTIntEnable(UART3_BASE, UART_INT_RX);
 
-    xMessage_queue = xQueueCreate(100, sizeof(MessageQueueStruct) );
-
-    if(xMessage_queue == NULL )
-    {
-        UARTprintf("Queue not created\n");
-    }
-
-    xTaskCreate(vMessageQueueTask3, (const char *)"Message Queue Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    xTaskCreate(vSevenMultiplesTask2, (const char *)"Multiple of seven Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    xTaskCreate(vTwoMultiplesTask1, (const char *)"Multiple of Two Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-
-    xSemaphoreGive(g_pSemaphore1);
+//    xMessage_queue = xQueueCreate(100, sizeof(MessageQueueStruct) );
+//
+//    if(xMessage_queue == NULL )
+//    {
+//        UARTprintf("Queue not created\n");
+//    }
+//
+//    xTaskCreate(vMessageQueueTask3, (const char *)"Message Queue Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+//    xTaskCreate(vSevenMultiplesTask2, (const char *)"Multiple of seven Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+//    xTaskCreate(vTwoMultiplesTask1, (const char *)"Multiple of Two Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+//
+//    xSemaphoreGive(g_pSemaphore1);
 
 //    xTaskCreate(vTwoMultipleTask1,"Multiple of 2",1000,NULL,2,NULL);
 //    xTaskCreate(vSevenMultipleTask2,"Multiple of 7",1000,NULL,2,NULL);
@@ -282,7 +285,11 @@ main(void)
     //
     vTaskStartScheduler();
 
-    while(1){
+    while(1)
+    {
+        xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+        UARTprintf("\nERROR: SCHEDULER EXIT\n");
+        xSemaphoreGive(g_pUARTSemaphore);
 
     }
 }

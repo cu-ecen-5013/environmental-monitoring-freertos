@@ -8,6 +8,11 @@
 #include "../include_files/uart.h"
 
 
+struct receive_msg_queue recv_mq;
+
+extern QueueHandle_t xReceiveMsgQueue;
+
+extern xSemaphoreHandle g_pUARTSemaphore;
 //*****************************************************************************
 //
 // Configure the UART and its pins.  This must be called before UARTprintf().
@@ -47,6 +52,7 @@ ConfigureUART(void)
 
 }
 
+uint16_t recv_recv_bbb;
 
 /*
  * Function : Configure_TX
@@ -103,6 +109,9 @@ void Configure_RX(void)
     // Use the internal 16MHz oscillator as the UART clock source.
     //
     UARTClockSourceSet(UART3_BASE, UART_CLOCK_PIOSC);
+
+    UARTEnable(UART3_BASE);
+
     //
     // Initialize the UART for console I/O.
     //
@@ -111,7 +120,7 @@ void Configure_RX(void)
 }
 
 /********************************************************************************************************
- * INTERRUPT FLAGS AND HANDLERS
+ * INTERRUPT recv_bbbS AND HANDLERS
  */
 
 void send_string(void)
@@ -140,13 +149,31 @@ void UART_Transmit_ISR(void)
 
 void UART_Receive_ISR(void)
 {
+    int recv_bbb = 0;
+    UARTprintf("Receive string\n");
     uint32_t ui32receive_status;
     ui32receive_status = UARTIntStatus(UART3_BASE,true);
     UARTIntClear(UART3_BASE,ui32receive_status);
     while(UARTCharsAvail(UART3_BASE))
     {
-        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
-        UARTprintf("%c",received_data);
+//        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
+//        UARTprintf("%c",received_data);
         //SysCtlDelay(SysCtlClockGet()/(1000 * 3));
+
+        if(recv_bbb == 0)
+        {
+            uint8_t recv_1 = ROM_UARTCharGet(UART3_BASE);
+            recv_mq.sensor_ID = recv_1;
+            UARTprintf("Sensor ID: %u\n", recv_1);
+            recv_bbb = 1;
+        }
+        else if (recv_bbb == 1)
+        {
+            uint8_t recv_2 = ROM_UARTCharGet(UART3_BASE);
+            recv_mq.sensor_value = recv_2;
+            UARTprintf("Sensor value :%u\n", recv_2);
+            recv_bbb = 0;
+        }
+
     }
 }
