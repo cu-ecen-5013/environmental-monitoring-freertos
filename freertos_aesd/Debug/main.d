@@ -40,6 +40,7 @@ main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/timers.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 main.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
+main.obj: ../include_files/processing_bbb.h
 
 ../main.c: 
 ../include_files/uart.h: 
@@ -81,3 +82,4 @@ C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/semphr.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/third_party/FreeRTOS/Source/include/timers.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
+../include_files/processing_bbb.h: 

@@ -9,6 +9,7 @@ Edited by: Akshita Bhasin
         -- To include changes for Message Queue Testing
  */
 #include "include_files/uart.h"
+#include "include_files/processing_bbb.h"
 
 //*****************************************************************************
 //
@@ -54,6 +55,8 @@ vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
 SemaphoreHandle_t g_pSemaphore1, g_pSemaphore2, g_pSemaphore3;
 QueueHandle_t xMessage_queue;
 QueueHandle_t xReceiveMsgQueue;
+
+struct receive_msg_queue recv_mq;
 
 typedef struct Msg_que
 {
@@ -214,7 +217,12 @@ main(void)
 
     UARTprintf("Environmental monitoring system");
 
-    xReceiveMsgQueue = xQueueCreate(300, 4);
+    xReceiveMsgQueue = xQueueCreate(300, sizeof(recv_mq));
+
+    if(xReceiveMsgQueue == NULL )
+    {
+        UARTprintf("Queue not created\n");
+    }
 
 //    g_pSemaphore1 = xSemaphoreCreateBinary();
 //    g_pSemaphore2 = xSemaphoreCreateBinary();
@@ -242,10 +250,10 @@ main(void)
 //        xSemaphoreGive(g_pUARTSemaphore);
 //    }
 
-    UARTFIFOLevelSet(UART3_BASE,NULL,UART_FIFO_RX2_8);
-
     //enables processor interrupts
     IntMasterEnable();
+
+    UARTFIFOLevelSet(UART3_BASE,NULL,UART_FIFO_RX2_8);
 
 //    enable interrupt for UART
     IntEnable(INT_UART1);
@@ -272,6 +280,7 @@ main(void)
 //    xTaskCreate(vSevenMultipleTask2,"Multiple of 7",1000,NULL,2,NULL);
 //
 //    xSemaphoreGive(g_pTask2);
+    xTaskCreate(vProcessingTask, (const portCHAR *)"Sensors to actuators", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
     UARTprintf("\n\r Board Transmitting\n\r");
     //UARTprintf("\n\r Board Receiving");
@@ -287,10 +296,6 @@ main(void)
 
     while(1)
     {
-        xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
-        UARTprintf("\nERROR: SCHEDULER EXIT\n");
-        xSemaphoreGive(g_pUARTSemaphore);
-
     }
 }
 

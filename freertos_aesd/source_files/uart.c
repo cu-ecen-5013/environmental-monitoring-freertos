@@ -7,8 +7,7 @@
 
 #include "../include_files/uart.h"
 
-
-struct receive_msg_queue recv_mq;
+struct send_msg_queue send_mq;
 
 extern QueueHandle_t xReceiveMsgQueue;
 
@@ -52,7 +51,7 @@ ConfigureUART(void)
 
 }
 
-uint16_t recv_recv_bbb;
+uint16_t recv_flag;
 
 /*
  * Function : Configure_TX
@@ -123,16 +122,14 @@ void Configure_RX(void)
  * INTERRUPT recv_bbbS AND HANDLERS
  */
 
-void send_string(void)
+void send_string(char * send_string, uint32_t size)
 {
-    char test_string[] = "Hello Beaglebone!!!";
-
-    char *string_test = test_string;
-
-    while(*string_test != '\0')
+    UARTprintf("Transmitting String %s of size: %d\n", send_string, size);
+    while(*send_string != '\0')
     {
-        UARTCharPut(UART1_BASE,*string_test);
-        string_test++;
+        UARTCharPut(UART1_BASE,*send_string);
+        UARTprintf("%c", *send_string);
+        send_string++;
 //        SysCtlDelay(SysCtlClockGet()/(10000 * 3));
     }
 }
@@ -171,9 +168,21 @@ void UART_Receive_ISR(void)
         {
             uint8_t recv_2 = ROM_UARTCharGet(UART3_BASE);
             recv_mq.sensor_value = recv_2;
+            recv_flag = 1;
             UARTprintf("Sensor value :%u\n", recv_2);
             recv_bbb = 0;
         }
 
+        if(recv_flag == 1)
+        {
+            if(xQueueSendFromISR(xReceiveMsgQueue, &recv_mq, NULL) == pdTRUE)
+            {
+                static int messages = 0;
+                xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+                UARTprintf("Message count: %d\n",++messages);
+                xSemaphoreGive(g_pUARTSemaphore);
+            }
+            recv_flag = 0;
+        }
     }
 }

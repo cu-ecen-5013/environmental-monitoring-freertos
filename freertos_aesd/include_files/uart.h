@@ -41,12 +41,14 @@ struct send_msg_queue
     uint8_t actuator_value;
 };
 
+extern struct receive_msg_queue recv_mq;
+
 void ConfigureUART(void);
 void Configure_TX(void);
 void Configure_RX(void);
 void UART_Transmit_ISR(void);
 void UART_Receive_ISR(void);
-void send_string(void);
+void send_string(char * send_string, uint32_t size);
 
 
 #endif /* INCLUDE_FILES_UART_H_ */

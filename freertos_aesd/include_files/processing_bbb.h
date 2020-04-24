@@ -32,17 +32,7 @@
 #include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
 
-struct sensor_msg_queue
-{
-    uint8_t sensor_ID;
-    uint16_t sensor_value;
-};
-
-struct actuator_msg_queue
-{
-    uint8_t actuator_ID;
-    uint8_t actuator_value;
-};
+#include "uart.h"
 
 void vProcessingTask(void *pvParameters);
 
