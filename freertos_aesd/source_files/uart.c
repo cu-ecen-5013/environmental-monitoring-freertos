@@ -142,6 +142,7 @@ void UART_Transmit_ISR(void)
     uint32_t ui32transmit_status;
     ui32transmit_status = UARTIntStatus(UART1_BASE,true);
     UARTIntClear(UART1_BASE,ui32transmit_status);
+
 }
 
 void UART_Receive_ISR(void)
@@ -153,9 +154,6 @@ void UART_Receive_ISR(void)
     UARTIntClear(UART3_BASE,ui32receive_status);
     while(UARTCharsAvail(UART3_BASE))
     {
-//        unsigned char received_data = ROM_UARTCharGet(UART3_BASE);
-//        UARTprintf("%c",received_data);
-        //SysCtlDelay(SysCtlClockGet()/(1000 * 3));
 
         if(recv_bbb == 0)
         {

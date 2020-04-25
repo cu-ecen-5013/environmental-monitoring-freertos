@@ -7,12 +7,9 @@
 
 #include "../include_files/processing_bbb.h"
 
-extern xSemaphoreHandle g_pUARTSemaphore;
 extern QueueHandle_t xReceiveMsgQueue;
-extern uint32_t sensor_value;
 
 uint8_t buzzer_flag = 0;
-uint8_t led_set, led_indicator=10;
 
 extern struct receive_msg_queue recv_mq;
 
@@ -30,11 +27,12 @@ void vProcessingTask(void *pvParameters)
     {
         if(xQueueReceive(xReceiveMsgQueue, &(recv_mq), (TickType_t)20))
         {
+//            recv_mq.sensor_ID = 2;
             UARTprintf("In queue receive\n");
             //TMP102
             if (recv_mq.sensor_ID == 1)
             {
-                if (recv_mq.sensor_value >= 26)
+                if (recv_mq.sensor_value > 28)
                 {
                     buzzer_flag  = 1;
                     buzzer.actuator_ID=1;
@@ -55,6 +53,25 @@ void vProcessingTask(void *pvParameters)
                 }
             }
             //Add ambient sensor processing
+            if (recv_mq.sensor_ID == 2)
+            {
+                if (recv_mq.sensor_value < 30)
+                {
+                    LED.actuator_ID=0;
+                    LED.actuator_value=255;
+                    UARTprintf("Actuator ID %d\n", LED_ptr->actuator_ID);
+                    UARTprintf("Actuator value %d\n", LED_ptr->actuator_value);
+                    send_string((char *)LED_ptr, sizeof(LED));
+                }
+                else
+                {
+                    LED.actuator_ID=0;
+                    LED.actuator_value=0;
+                    UARTprintf("Actuator ID %d\n", LED_ptr->actuator_ID);
+                    UARTprintf("Actuator value %d\n", LED_ptr->actuator_value);
+                    send_string((char *)LED_ptr, sizeof(LED));
+                }
+            }
         }
     }
 }

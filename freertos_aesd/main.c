@@ -6,7 +6,8 @@ Reference : https://www.cse.iitb.ac.in/~erts/html_pages/Resources/Tiva/TM4C123G_
 https://www.freertos.org/a00018.html
 
 Edited by: Akshita Bhasin
-        -- To include changes for Message Queue Testing
+        -- To include changes for Message Queue Testing\
+        -- Integrated code, for Smart Environmental Monitoring System
  */
 #include "include_files/uart.h"
 #include "include_files/processing_bbb.h"
@@ -147,51 +148,6 @@ void vMessageQueueTask3(void * pvParameters)
 
 }
 
-//SemaphoreHandle_t g_pTask1, g_pTask2;
-//
-//int calculate_multiple(int num, int multiplier)
-//{
-//   return num * multiplier;
-//}
-//
-//// task handlers
-//void vTwoMultiplesTask1(void *pvParameters);
-//void vSevenMultiplesTask2(void *pvParameters);
-//
-//
-//void vTwoMultipleTask1(void *pvParameters)
-//{
-//    static int i = 1;
-//    int result;
-//    while(i < 256)
-//    {
-//
-//        xSemaphoreTake(g_pTask2,portMAX_DELAY);
-//        result = calculate_multiple(2,i);
-//        i++;
-//        xSemaphoreTake(g_pUARTSemaphore,portMAX_DELAY);
-//        UARTprintf("\nMultiple of 2 at %d = %d",i,result);
-//        xSemaphoreGive(g_pUARTSemaphore);
-//        xSemaphoreGive(g_pTask1);
-//    }
-//}
-//
-//void vSevenMultipleTask2(void *pvParameters)
-//{
-//    static int j = 1;
-//    int result;
-//    while(j < 256)
-//    {
-//        xSemaphoreTake(g_pTask1,portMAX_DELAY);
-//        result = calculate_multiple(7,j);
-//        j++;
-//        xSemaphoreTake(g_pUARTSemaphore,portMAX_DELAY);
-//        UARTprintf("\nMultiple of 7 at %d = %d",j,result);
-//        xSemaphoreGive(g_pUARTSemaphore);
-//        xSemaphoreGive(g_pTask2);
-//    }
-//}
-
 //*****************************************************************************
 //
 // Initialize FreeRTOS and start the initial set of tasks.
@@ -224,32 +180,6 @@ main(void)
         UARTprintf("Queue not created\n");
     }
 
-//    g_pSemaphore1 = xSemaphoreCreateBinary();
-//    g_pSemaphore2 = xSemaphoreCreateBinary();
-//    g_pSemaphore3 = xSemaphoreCreateBinary();
-//
-//    if((g_pSemaphore3 == NULL) || (g_pSemaphore2 == NULL) || (g_pSemaphore1 == NULL))
-//    {
-//        UARTprintf("\n\rSemaphore not created.");
-//    }
-
-//    g_pTask1 = xSemaphoreCreateBinary();
-//    g_pTask2 = xSemaphoreCreateBinary();
-//
-//    if(g_pTask1 == NULL)
-//    {
-//        xSemaphoreTake(g_pUARTSemaphore,portMAX_DELAY);
-//        UARTprintf("\n\rBinary task 1 not created");
-//        xSemaphoreGive(g_pUARTSemaphore);
-//    }
-//
-//    if(g_pTask2 == NULL)
-//    {
-//        xSemaphoreTake(g_pUARTSemaphore,portMAX_DELAY);
-//        UARTprintf("\n\rBinary task 2 not created");
-//        xSemaphoreGive(g_pUARTSemaphore);
-//    }
-
     //enables processor interrupts
     IntMasterEnable();
 
@@ -263,32 +193,10 @@ main(void)
     UARTIntEnable(UART1_BASE, UART_INT_TX);
     UARTIntEnable(UART3_BASE, UART_INT_RX);
 
-//    xMessage_queue = xQueueCreate(100, sizeof(MessageQueueStruct) );
-//
-//    if(xMessage_queue == NULL )
-//    {
-//        UARTprintf("Queue not created\n");
-//    }
-//
-//    xTaskCreate(vMessageQueueTask3, (const char *)"Message Queue Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-//    xTaskCreate(vSevenMultiplesTask2, (const char *)"Multiple of seven Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-//    xTaskCreate(vTwoMultiplesTask1, (const char *)"Multiple of Two Task", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-//
-//    xSemaphoreGive(g_pSemaphore1);
-
-//    xTaskCreate(vTwoMultipleTask1,"Multiple of 2",1000,NULL,2,NULL);
-//    xTaskCreate(vSevenMultipleTask2,"Multiple of 7",1000,NULL,2,NULL);
-//
-//    xSemaphoreGive(g_pTask2);
     xTaskCreate(vProcessingTask, (const portCHAR *)"Sensors to actuators", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
     UARTprintf("\n\r Board Transmitting\n\r");
-    //UARTprintf("\n\r Board Receiving");
 
-//    while(true)
-//    {
-//        send_string();
-//    }
     //
     // Start the scheduler.  This should not return.
     //
