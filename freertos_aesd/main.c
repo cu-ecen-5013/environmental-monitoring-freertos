@@ -54,6 +54,7 @@ vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
 }
 
 SemaphoreHandle_t g_pSemaphore1, g_pSemaphore2, g_pSemaphore3;
+SemaphoreHandle_t g_pReceiveSem, g_pSendSem;
 QueueHandle_t xMessage_queue;
 QueueHandle_t xReceiveMsgQueue;
 
@@ -171,9 +172,12 @@ main(void)
 
     g_pUARTSemaphore = xSemaphoreCreateMutex();
 
+    g_pReceiveSem = xSemaphoreCreateBinary();
+    g_pSendSem = xSemaphoreCreateBinary();
+
     UARTprintf("Environmental monitoring system");
 
-    xReceiveMsgQueue = xQueueCreate(300, sizeof(recv_mq));
+    xReceiveMsgQueue = xQueueCreate(2, sizeof(recv_mq));
 
     if(xReceiveMsgQueue == NULL )
     {
@@ -192,6 +196,8 @@ main(void)
 //    enable receive interrupt on module 3 and transmit interrupt on module 1
     UARTIntEnable(UART1_BASE, UART_INT_TX);
     UARTIntEnable(UART3_BASE, UART_INT_RX);
+
+    xSemaphoreGive(g_pSendSem);
 
     xTaskCreate(vProcessingTask, (const portCHAR *)"Sensors to actuators", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 

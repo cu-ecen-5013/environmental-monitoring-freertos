@@ -12,6 +12,7 @@ struct send_msg_queue send_mq;
 extern QueueHandle_t xReceiveMsgQueue;
 
 extern xSemaphoreHandle g_pUARTSemaphore;
+extern SemaphoreHandle_t g_pReceiveSem, g_pSendSem;
 //*****************************************************************************
 //
 // Configure the UART and its pins.  This must be called before UARTprintf().
@@ -160,7 +161,7 @@ void UART_Receive_ISR(void)
         {
             uint8_t recv_1 = ROM_UARTCharGet(UART3_BASE);
             recv_mq.sensor_ID = recv_1;
-            UARTprintf("Sensor ID: %u\n", recv_1);
+            UARTprintf("Sensor ID: %u\n", recv_mq.sensor_ID);
             recv_bbb = 1;
         }
         else if (recv_bbb == 1)
@@ -168,20 +169,24 @@ void UART_Receive_ISR(void)
             uint8_t recv_2 = ROM_UARTCharGet(UART3_BASE);
             recv_mq.sensor_value = recv_2;
             recv_flag = 1;
-            UARTprintf("Sensor value :%u\n", recv_2);
+            UARTprintf("Sensor value :%u\n", recv_mq.sensor_value);
             recv_bbb = 0;
         }
 
         if(recv_flag == 1)
         {
-            if(xQueueSendFromISR(xReceiveMsgQueue, &recv_mq, NULL) == pdTRUE)
+            if(xSemaphoreTake(g_pSendSem, ( TickType_t ) 0) == pdTRUE )
             {
-                static int messages = 0;
-                xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
-                UARTprintf("Message count: %d\n",++messages);
-                xSemaphoreGive(g_pUARTSemaphore);
+                if(xQueueSendFromISR(xReceiveMsgQueue, &recv_mq, NULL) == pdTRUE)
+                {
+                    static int messages = 0;
+                    xSemaphoreTake(g_pUARTSemaphore, portMAX_DELAY);
+                    UARTprintf("Message count: %d\n",++messages);
+                    xSemaphoreGive(g_pUARTSemaphore);
+                }
+                recv_flag = 0;
+                xSemaphoreGive(g_pReceiveSem);
             }
-            recv_flag = 0;
         }
     }
 }
