@@ -124,12 +124,13 @@ void Configure_RX(void)
 
 void send_string(char * send_string, uint32_t size)
 {
-    UARTprintf("Transmitting String %s of size: %d\n", send_string, size);
-    while(*send_string != '\0')
+    int i =0;
+    UARTprintf("Transmitting String  of size: %d\n", size);
+    while(i < size)
     {
         UARTCharPut(UART1_BASE,*send_string);
-        UARTprintf("%c", *send_string);
         send_string++;
+        i++;
 //        SysCtlDelay(SysCtlClockGet()/(10000 * 3));
     }
 }

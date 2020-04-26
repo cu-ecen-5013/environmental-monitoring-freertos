@@ -32,7 +32,7 @@ void vProcessingTask(void *pvParameters)
             //TMP102
             if (recv_mq.sensor_ID == 1)
             {
-                if (recv_mq.sensor_value > 28)
+                if (recv_mq.sensor_value > 24)
                 {
                     buzzer_flag  = 1;
                     buzzer.actuator_ID=1;
@@ -43,21 +43,20 @@ void vProcessingTask(void *pvParameters)
 
                 else
                 {
-                    if (buzzer_flag == 1)
-                    {
-                        buzzer.actuator_ID=1;
-                        buzzer.actuator_value=0;
-                        send_string((char *)buzzer_ptr, sizeof(buzzer));
-                        buzzer_flag =0;
-                    }
+                    buzzer_flag  = 0;
+                    buzzer.actuator_ID=1;
+                    buzzer.actuator_value=0;
+                    UARTprintf("Buzzer ID %d, value %d\n", buzzer_ptr->actuator_ID, buzzer_ptr->actuator_value);
+                    send_string((char *)buzzer_ptr, sizeof(buzzer));
                 }
+               SysCtlDelay(SysCtlClockGet());
             }
             //Add ambient sensor processing
             if (recv_mq.sensor_ID == 2)
             {
-                if (recv_mq.sensor_value < 30)
+                if (recv_mq.sensor_value < 35)
                 {
-                    LED.actuator_ID=0;
+                    LED.actuator_ID=2;
                     LED.actuator_value=255;
                     UARTprintf("Actuator ID %d\n", LED_ptr->actuator_ID);
                     UARTprintf("Actuator value %d\n", LED_ptr->actuator_value);
@@ -65,7 +64,7 @@ void vProcessingTask(void *pvParameters)
                 }
                 else
                 {
-                    LED.actuator_ID=0;
+                    LED.actuator_ID=2;
                     LED.actuator_value=0;
                     UARTprintf("Actuator ID %d\n", LED_ptr->actuator_ID);
                     UARTprintf("Actuator value %d\n", LED_ptr->actuator_value);
